@@ -13,7 +13,7 @@ export default function DebugPanel({
     isPinching = false,
     pinchStrength = 0,
     error = null,
-    onReconnect = () => {}
+    onReconnect = () => { }
 }) {
     const [isVisible, setIsVisible] = useState(true)
     const [isExpanded, setIsExpanded] = useState(true)
@@ -61,15 +61,15 @@ export default function DebugPanel({
                     <h3>Gesture Control Debug</h3>
                 </div>
                 <div className="debug-controls">
-                    <button 
-                        className="control-btn expand-btn" 
+                    <button
+                        className="control-btn expand-btn"
                         onClick={toggleExpanded}
                         title={isExpanded ? 'Collapse' : 'Expand'}
                     >
                         {isExpanded ? '−' : '+'}
                     </button>
-                    <button 
-                        className="control-btn close-btn" 
+                    <button
+                        className="control-btn close-btn"
                         onClick={toggleVisibility}
                         title="Hide Debug Panel"
                     >
@@ -86,7 +86,7 @@ export default function DebugPanel({
                             <span className="section-icon">⚙️</span>
                             <h4>System Status</h4>
                         </div>
-                        
+
                         <div className="status-grid">
                             <div className="status-item">
                                 <div className="status-label">Camera</div>
@@ -95,7 +95,7 @@ export default function DebugPanel({
                                     <span>{cameraReady ? 'Ready' : 'Loading...'}</span>
                                 </div>
                             </div>
-                            
+
                             <div className="status-item">
                                 <div className="status-label">Bulbs</div>
                                 <div className="status-value">
@@ -111,7 +111,7 @@ export default function DebugPanel({
                             <span className="section-icon">🔗</span>
                             <h4>Connection</h4>
                         </div>
-                        
+
                         <div className="connection-info">
                             <div className="connection-status">
                                 <div className={`connection-indicator ${connectionStatus}`}>
@@ -124,13 +124,13 @@ export default function DebugPanel({
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="frame-counter">
                                 <span className="frame-label">FPS:</span>
                                 <span className="frame-count">{frameCount}</span>
                                 <div className="frame-bar">
-                                    <div 
-                                        className="frame-fill" 
+                                    <div
+                                        className="frame-fill"
                                         style={{ width: `${Math.min(frameCount / 30 * 100, 100)}%` }}
                                     ></div>
                                 </div>
@@ -144,7 +144,7 @@ export default function DebugPanel({
                             <span className="section-icon">👋</span>
                             <h4>Hand Tracking</h4>
                         </div>
-                        
+
                         <div className="hand-tracking-info">
                             <div className="tracking-status">
                                 <div className={`hand-indicator ${handDetected ? 'detected' : 'not-detected'}`}>
@@ -152,7 +152,7 @@ export default function DebugPanel({
                                     <span>{handDetected ? 'Hand Detected' : 'No Hand'}</span>
                                 </div>
                             </div>
-                            
+
                             {fingerPosition && (
                                 <div className="finger-position">
                                     <div className="coordinate-display">
@@ -165,11 +165,11 @@ export default function DebugPanel({
                                             <span className="coord-value">{fingerPosition.y.toFixed(3)}</span>
                                         </div>
                                     </div>
-                                    
+
                                     {/* Visual hand position indicator */}
                                     <div className="hand-visualizer">
                                         <div className="hand-area">
-                                            <div 
+                                            <div
                                                 className="hand-cursor"
                                                 style={{
                                                     left: `${fingerPosition.x * 100}%`,
@@ -189,7 +189,7 @@ export default function DebugPanel({
                             <span className="section-icon">🎯</span>
                             <h4>Ray Casting</h4>
                         </div>
-                        
+
                         <div className="raycasting-info">
                             <div className="pointing-status">
                                 <div className={`pointing-indicator ${pointing ? 'pointing' : 'not-pointing'}`}>
@@ -197,7 +197,7 @@ export default function DebugPanel({
                                     <span>{pointing ? 'Targeting' : 'Scanning'}</span>
                                 </div>
                             </div>
-                            
+
                             {hitInfo && (
                                 <div className="hit-info">
                                     <div className="hit-details">
@@ -210,10 +210,10 @@ export default function DebugPanel({
                                             <span className="hit-value">{hitInfo.distance?.toFixed(2)}m</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="distance-bar">
-                                        <div 
-                                            className="distance-fill" 
+                                        <div
+                                            className="distance-fill"
                                             style={{ width: `${100 - Math.min(hitInfo.distance / 5 * 100, 100)}%` }}
                                         ></div>
                                     </div>
@@ -228,7 +228,7 @@ export default function DebugPanel({
                             <span className="section-icon">🤏</span>
                             <h4>Pinch Gesture</h4>
                         </div>
-                        
+
                         <div className="pinch-info">
                             <div className="pinch-status">
                                 <div className={`pinch-indicator ${isPinching ? 'pinching' : 'released'}`}>
@@ -236,21 +236,21 @@ export default function DebugPanel({
                                     <span>{isPinching ? 'Pinching' : 'Released'}</span>
                                 </div>
                             </div>
-                            
+
                             <div className="pinch-strength">
                                 <div className="strength-label">
                                     <span>Strength:</span>
                                     <span className="strength-percentage">{(pinchStrength * 100).toFixed(0)}%</span>
                                 </div>
                                 <div className="strength-bar">
-                                    <div 
-                                        className="strength-fill" 
+                                    <div
+                                        className="strength-fill"
                                         style={{ width: `${pinchStrength * 100}%` }}
                                     ></div>
                                     <div className="strength-threshold" style={{ left: '70%' }}></div>
                                 </div>
                             </div>
-                            
+
                             {isPinching && hitInfo && (
                                 <div className="action-ready">
                                     <div className="ready-indicator">
