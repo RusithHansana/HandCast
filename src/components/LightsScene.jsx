@@ -12,6 +12,7 @@ import useAudio from '../hooks/useAudio'
 const Bulb = forwardRef(({ id, position, onToggle, isPointed = false, isCeiling = false }, ref) => {
     const [on, setOn] = useState(false)
     const meshRef = useRef()
+    const hitboxRef = useRef()
     const { playSound } = useAudio()
 
     const playClickSound = async () => {
@@ -37,6 +38,7 @@ const Bulb = forwardRef(({ id, position, onToggle, isPointed = false, isCeiling 
         },
         id,
         mesh: meshRef.current,
+        hitbox: hitboxRef.current, // Add reference to hitbox
         isOn: on
     }))
 
@@ -109,6 +111,17 @@ const Bulb = forwardRef(({ id, position, onToggle, isPointed = false, isCeiling 
                 />
             </mesh>
 
+            {/* Invisible larger hitbox for easier targeting */}
+            <mesh
+                ref={hitboxRef}
+                position={isCeiling ? [0, -0.1, 0] : [0, -0.15, 0]}
+                userData={{ id }}
+                visible={false}
+            >
+                <sphereGeometry args={[0.4, 16, 16]} />
+                <meshBasicMaterial transparent opacity={0} />
+            </mesh>
+
             {/* Light emission when bulb is on */}
             {on && (
                 <pointLight
@@ -125,18 +138,34 @@ const Bulb = forwardRef(({ id, position, onToggle, isPointed = false, isCeiling 
 
             {/* Outline effect when pointed at */}
             {isPointed && (
-                <mesh
-                    position={isCeiling ? [0, -0.1, 0] : [0, -0.15, 0]}
-                    scale={[1.15, 1.15, 1.15]}
-                >
-                    <sphereGeometry args={[0.2, 32, 32]} />
-                    <meshBasicMaterial
-                        color={on ? "#ffffff" : "#00ff88"}
-                        transparent
-                        opacity={0.15}
-                        side={THREE.DoubleSide}
-                    />
-                </mesh>
+                <>
+                    {/* Main bulb outline */}
+                    <mesh
+                        position={isCeiling ? [0, -0.1, 0] : [0, -0.15, 0]}
+                        scale={[1.15, 1.15, 1.15]}
+                    >
+                        <sphereGeometry args={[0.2, 32, 32]} />
+                        <meshBasicMaterial
+                            color={on ? "#ffffff" : "#00ff88"}
+                            transparent
+                            opacity={0.15}
+                            side={THREE.DoubleSide}
+                        />
+                    </mesh>
+
+                    {/* Hitbox visualization (subtle wireframe) */}
+                    <mesh
+                        position={isCeiling ? [0, -0.1, 0] : [0, -0.15, 0]}
+                    >
+                        <sphereGeometry args={[0.4, 16, 16]} />
+                        <meshBasicMaterial
+                            color="#00ff88"
+                            transparent
+                            opacity={0.05}
+                            wireframe
+                        />
+                    </mesh>
+                </>
             )}
         </group>
     )

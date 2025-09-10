@@ -43,6 +43,7 @@ python server.py
 ## Hand Landmarks
 
 The server sends 21 hand landmarks in the format:
+
 ```json
 {
   "landmarks": [
@@ -55,6 +56,7 @@ The server sends 21 hand landmarks in the format:
 ```
 
 Landmark indices follow MediaPipe convention:
+
 - 0: Wrist
 - 4: Thumb tip
 - 8: Index finger tip

@@ -13,8 +13,8 @@ function App() {
   // Connect to Python backend for hand tracking
   const { landmarks, connectionStatus, error, frameCount, reconnect } = useHandPython()
 
-  // Ray casting logic
-  const { hitInfo, pointing, fingerPosition } = useRaycasting(
+  // Ray casting logic with selection hold
+  const { hitInfo, pointing, fingerPosition, isHoldingSelection } = useRaycasting(
     cameraRef.current,
     landmarks,
     bulbRefs
@@ -74,6 +74,7 @@ function App() {
         pinchStrength={pinchStrength}
         cameraReady={!!cameraRef.current}
         bulbCount={bulbRefs.current?.length || 0}
+        isHoldingSelection={isHoldingSelection}
         onReconnect={reconnect}
       />
     </div>

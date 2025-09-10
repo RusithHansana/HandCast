@@ -12,6 +12,7 @@ export default function DebugPanel({
     fingerPosition = null,
     isPinching = false,
     pinchStrength = 0,
+    isHoldingSelection = false,
     error = null,
     onReconnect = () => { }
 }) {
@@ -24,7 +25,7 @@ export default function DebugPanel({
         setAnimationClass('pulse')
         const timer = setTimeout(() => setAnimationClass(''), 300)
         return () => clearTimeout(timer)
-    }, [connectionStatus, handDetected, pointing, isPinching])
+    }, [connectionStatus, handDetected, pointing, isPinching, isHoldingSelection])
 
     // Calculate connection quality based on frame rate
     const getConnectionQuality = () => {
@@ -192,9 +193,11 @@ export default function DebugPanel({
 
                         <div className="raycasting-info">
                             <div className="pointing-status">
-                                <div className={`pointing-indicator ${pointing ? 'pointing' : 'not-pointing'}`}>
+                                <div className={`pointing-indicator ${pointing ? 'pointing' : (isHoldingSelection ? 'holding' : 'not-pointing')}`}>
                                     <div className="pointing-dot"></div>
-                                    <span>{pointing ? 'Targeting' : 'Scanning'}</span>
+                                    <span>
+                                        {pointing ? 'Targeting' : isHoldingSelection ? 'Holding Selection' : 'Scanning'}
+                                    </span>
                                 </div>
                             </div>
 
