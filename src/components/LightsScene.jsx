@@ -1,7 +1,9 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { useRef, forwardRef, useImperativeHandle, useState } from 'react'
+import * as THREE from 'three'
 import RayVisualizer from './RayVisualizer'
+import Room from './Room'
 
 // Preload audio outside component to avoid re-creation
 let clickAudio = null
@@ -51,41 +53,77 @@ const Bulb = forwardRef(({ id, position, onToggle, isPointed = false }, ref) => 
     }))
 
     return (
-        <mesh
-            ref={meshRef}
-            position={position}
-            userData={{ id }}
-            onClick={() => {
-                setOn(prev => {
-                    const newOn = !prev
-                    playClickSound()
-                    onToggle?.(id)
-                    return newOn
-                })
-            }}
-        >
-            <sphereGeometry args={[0.2, 32, 32]} />
-            <meshStandardMaterial
-                color={on ? '#ffeb3b' : '#ffffff'}
-                emissive={on ? '#ffeb3b' : isPointed ? '#00ff00' : '#000000'}
-                emissiveIntensity={on ? 0.8 : isPointed ? 0.3 : 0}
-                roughness={0.1}
-                metalness={0.1}
-            />
+        <group position={position}>
+            {/* Light Fixture Base */}
+            <mesh position={[0, 0.1, 0]} castShadow>
+                <cylinderGeometry args={[0.15, 0.1, 0.2, 8]} />
+                <meshStandardMaterial 
+                    color="#404040" 
+                    roughness={0.3}
+                    metalness={0.8}
+                />
+            </mesh>
+
+            {/* Main Bulb */}
+            <mesh
+                ref={meshRef}
+                position={[0, -0.1, 0]}
+                userData={{ id }}
+                onClick={() => {
+                    setOn(prev => {
+                        const newOn = !prev
+                        playClickSound()
+                        onToggle?.(id)
+                        return newOn
+                    })
+                }}
+                castShadow
+            >
+                <sphereGeometry args={[0.2, 32, 32]} />
+                <meshStandardMaterial
+                    color={on ? '#fff8dc' : '#f5f5f5'}
+                    emissive={on ? '#ffeb3b' : isPointed ? '#00ff88' : '#000000'}
+                    emissiveIntensity={on ? 0.6 : isPointed ? 0.2 : 0}
+                    roughness={0.2}
+                    metalness={0.1}
+                    transparent={!on}
+                    opacity={on ? 1.0 : 0.8}
+                />
+            </mesh>
+
+            {/* Light emission when bulb is on */}
+            {on && (
+                <pointLight
+                    position={[0, -0.1, 0]}
+                    intensity={1.5}
+                    distance={6}
+                    decay={2}
+                    color="#fff8dc"
+                    castShadow
+                    shadow-mapSize-width={1024}
+                    shadow-mapSize-height={1024}
+                />
+            )}
 
             {/* Outline effect when pointed at */}
-            {isPointed && !on && (
-                <mesh scale={[1.1, 1.1, 1.1]}>
+            {isPointed && (
+                <mesh position={[0, -0.1, 0]} scale={[1.15, 1.15, 1.15]}>
                     <sphereGeometry args={[0.2, 32, 32]} />
                     <meshBasicMaterial
-                        color="#00ff00"
+                        color={on ? "#ffffff" : "#00ff88"}
                         transparent
-                        opacity={0.2}
-                        side={2} // THREE.DoubleSide
+                        opacity={0.15}
+                        side={THREE.DoubleSide}
                     />
                 </mesh>
             )}
-        </mesh>
+
+            {/* Hanging cord */}
+            <mesh position={[0, 0.3, 0]}>
+                <cylinderGeometry args={[0.01, 0.01, 0.4, 8]} />
+                <meshStandardMaterial color="#333333" roughness={0.8} />
+            </mesh>
+        </group>
     )
 })
 
@@ -104,37 +142,74 @@ export default function LightsScene({
 
     return (
         <Canvas
-            camera={{ position: [0, 1.6, 3], fov: 60 }}
+            camera={{ position: [0, 1.2, 2.5], fov: 65 }}
             style={{ width: '100vw', height: '100vh' }}
-            onCreated={({ camera }) => {
+            shadows
+            onCreated={({ camera, gl }) => {
+                // Enable shadows
+                gl.shadowMap.enabled = true
+                gl.shadowMap.type = THREE.PCFSoftShadowMap
+                
+                // Enhance rendering
+                gl.toneMapping = THREE.ACESFilmicToneMapping
+                gl.toneMappingExposure = 1.2
+                
                 if (onCameraReady) {
                     onCameraReady(camera)
                 }
             }}
         >
-            {/* Ambient lighting for overall scene illumination */}
-            <ambientLight intensity={0.4} />
+            {/* Enhanced ambient lighting for realistic room illumination */}
+            <ambientLight intensity={0.3} color="#f0f0f0" />
 
-            {/* Main directional light */}
+            {/* Main directional light (sunlight through window) */}
             <directionalLight
-                position={[5, 10, 5]}
-                intensity={0.8}
+                position={[3, 8, 2]}
+                intensity={1.2}
                 castShadow
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+                shadow-camera-far={20}
+                shadow-camera-left={-10}
+                shadow-camera-right={10}
+                shadow-camera-top={10}
+                shadow-camera-bottom={-10}
+                color="#ffffcc"
             />
 
-            {/* Point light for additional brightness */}
-            <pointLight position={[10, 10, 10]} intensity={0.5} />
+            {/* Secondary fill light */}
+            <directionalLight
+                position={[-2, 5, 4]}
+                intensity={0.4}
+                color="#e6f3ff"
+            />
 
-            {/* Orbit controls - disable pan and zoom for better UX */}
+            {/* Warm accent light from the side */}
+            <pointLight 
+                position={[3, 2, 1]} 
+                intensity={0.6} 
+                color="#ffcc88"
+                decay={2}
+                distance={8}
+            />
+
+            {/* Room Environment */}
+            <Room />
+
+            {/* Orbit controls - enhance for room navigation */}
             <OrbitControls
                 enablePan={false}
-                enableZoom={false}
-                minPolarAngle={Math.PI / 6}
-                maxPolarAngle={Math.PI / 2.2}
+                enableZoom={true}
+                minDistance={2}
+                maxDistance={8}
+                minPolarAngle={Math.PI / 8}
+                maxPolarAngle={Math.PI / 2.1}
+                maxAzimuthAngle={Math.PI / 3}
+                minAzimuthAngle={-Math.PI / 3}
             />
 
-            {/* Three light bulbs positioned horizontally */}
-            {[[-1.5, 1, 0], [0, 1, 0], [1.5, 1, 0]].map((position, index) => (
+            {/* Smart bulbs positioned as ceiling lights in room */}
+            {[[-2, 1.8, -1], [0, 1.8, 0], [2, 1.8, 1]].map((position, index) => (
                 <Bulb
                     key={index}
                     id={index + 1}
@@ -149,35 +224,15 @@ export default function LightsScene({
                 />
             ))}
 
-            {/* Ray visualization - inside Canvas */}
+            {/* Enhanced ray visualization */}
             {fingerPosition && (
                 <RayVisualizer
                     fingerPosition={fingerPosition}
                     visible={true}
-                    color={pointing ? 0x00ff00 : 0xff0000}
-                    length={5}
+                    color={pointing ? 0x00ccff : 0x00ffcc}
+                    length={8}
                 />
             )}
-
-            {/* Ground plane */}
-            <mesh
-                rotation={[-Math.PI / 2, 0, 0]}
-                position={[0, 0, 0]}
-                receiveShadow
-            >
-                <planeGeometry args={[10, 10]} />
-                <meshStandardMaterial
-                    color="#2a2a2a"
-                    roughness={0.8}
-                    metalness={0.1}
-                />
-            </mesh>
-
-            {/* Back wall for better depth perception */}
-            <mesh position={[0, 2, -2]}>
-                <planeGeometry args={[8, 4]} />
-                <meshStandardMaterial color="#1a1a1a" />
-            </mesh>
         </Canvas>
     )
 }
