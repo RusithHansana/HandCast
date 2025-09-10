@@ -28,7 +28,6 @@ export default function RayVisualizer({
     const animationState = useRef({
         rayOpacity: 0,
         targetOpacity: 0,
-        pulsePhase: 0,
         particleTime: 0
     })
 
@@ -180,8 +179,7 @@ export default function RayVisualizer({
             animationState.current.targetOpacity = visible ? 1 : 0
             animationState.current.rayOpacity += (animationState.current.targetOpacity - animationState.current.rayOpacity) * delta * 8
 
-            // Update pulse phase for effects
-            animationState.current.pulsePhase += delta * 4
+            // Update particle time for subtle movement
             animationState.current.particleTime += delta
 
             // Convert screen coordinates to world ray
@@ -199,7 +197,6 @@ export default function RayVisualizer({
             const intersection = findSceneIntersection(camera, correctedX, fingerPosition.y, sceneObjects)
 
             const rayOpacity = animationState.current.rayOpacity
-            const pulseFactor = 0.8 + 0.2 * Math.sin(animationState.current.pulsePhase)
 
             if (intersection) {
                 const actualLength = raycaster.ray.origin.distanceTo(intersection.point)
@@ -208,35 +205,29 @@ export default function RayVisualizer({
                 updateRayLine(rayLineRef.current, raycaster.ray.origin, raycaster.ray.direction, actualLength)
                 updateRayLine(glowLineRef.current, raycaster.ray.origin, raycaster.ray.direction, actualLength)
 
-                // Update ray materials with pulsing effect
+                // Update ray materials with static opacity
                 if (rayLineRef.current?.userData?.rayMaterial) {
-                    rayLineRef.current.userData.rayMaterial.opacity = rayOpacity * pulseFactor
+                    rayLineRef.current.userData.rayMaterial.opacity = rayOpacity
                 }
                 if (glowLineRef.current?.userData?.rayMaterial) {
-                    glowLineRef.current.userData.rayMaterial.opacity = rayOpacity * 0.4 * pulseFactor
+                    glowLineRef.current.userData.rayMaterial.opacity = rayOpacity * 0.4
                 }
 
                 // Show intersection effects
                 updateIntersectionDot(intersectionDotRef.current, intersection.point, 0xff4444, true)
 
-                // Enhanced dot pulsing
+                // Static dot appearance
                 if (intersectionDotRef.current) {
-                    const dotScale = 1 + 0.3 * Math.sin(animationState.current.pulsePhase * 2)
-                    intersectionDotRef.current.scale.setScalar(dotScale)
-                    intersectionDotRef.current.material.emissiveIntensity = 0.8 + 0.4 * Math.sin(animationState.current.pulsePhase * 3)
+                    intersectionDotRef.current.scale.setScalar(1.0)
+                    intersectionDotRef.current.material.emissiveIntensity = 0.8
                 }
 
-                // Ripple effect at intersection
+                // Static ripple effect at intersection
                 if (rippleEffectRef.current) {
                     rippleEffectRef.current.position.copy(intersection.point)
                     rippleEffectRef.current.lookAt(intersection.point.clone().add(intersection.normal || new THREE.Vector3(0, 1, 0)))
-
-                    const ripplePhase = (animationState.current.pulsePhase * 2) % (Math.PI * 2)
-                    const rippleScale = 1 + Math.sin(ripplePhase) * 0.5
-                    const rippleOpacity = Math.max(0, 0.6 * (1 - Math.sin(ripplePhase) * 0.5))
-
-                    rippleEffectRef.current.scale.setScalar(rippleScale)
-                    rippleEffectRef.current.material.opacity = rippleOpacity * rayOpacity
+                    rippleEffectRef.current.scale.setScalar(1.2)
+                    rippleEffectRef.current.material.opacity = 0.3 * rayOpacity
                     rippleEffectRef.current.visible = rayOpacity > 0.01
                 }
 
@@ -274,12 +265,12 @@ export default function RayVisualizer({
                 updateRayLine(rayLineRef.current, raycaster.ray.origin, raycaster.ray.direction, length)
                 updateRayLine(glowLineRef.current, raycaster.ray.origin, raycaster.ray.direction, length)
 
-                // Update materials
+                // Update materials with static opacity
                 if (rayLineRef.current?.userData?.rayMaterial) {
-                    rayLineRef.current.userData.rayMaterial.opacity = rayOpacity * pulseFactor
+                    rayLineRef.current.userData.rayMaterial.opacity = rayOpacity
                 }
                 if (glowLineRef.current?.userData?.rayMaterial) {
-                    glowLineRef.current.userData.rayMaterial.opacity = rayOpacity * 0.3 * pulseFactor
+                    glowLineRef.current.userData.rayMaterial.opacity = rayOpacity * 0.3
                 }
 
                 // Hide intersection effects

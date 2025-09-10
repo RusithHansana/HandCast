@@ -24,15 +24,13 @@ export default function HandOverlay({ landmarks, connectionStatus }) {
             ctx.textAlign = 'center'
             ctx.fillText('No hand detected', width / 2, height / 2)
 
-            // Draw scanning animation
-            const time = Date.now() * 0.003
-            const scanY = (Math.sin(time) * 0.5 + 0.5) * height
-            ctx.strokeStyle = `rgba(59, 130, 246, ${0.5 + Math.sin(time * 2) * 0.3})`
+            // Static scanning indicator
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)'
             ctx.lineWidth = 2
             ctx.setLineDash([5, 5])
             ctx.beginPath()
-            ctx.moveTo(0, scanY)
-            ctx.lineTo(width, scanY)
+            ctx.moveTo(0, height / 2 + 20)
+            ctx.lineTo(width, height / 2 + 20)
             ctx.stroke()
             ctx.setLineDash([])
             return
@@ -114,24 +112,23 @@ export default function HandOverlay({ landmarks, connectionStatus }) {
             const x = fingertip.x * width
             const y = fingertip.y * height
 
-            // Animated ring around fingertip
-            const time = Date.now() * 0.005
-            const pulseRadius = 10 + Math.sin(time) * 3
+            // Static ring around fingertip
+            const staticRadius = 12
 
             // Outer glow
-            const fingertipGradient = ctx.createRadialGradient(x, y, 0, x, y, pulseRadius + 5)
+            const fingertipGradient = ctx.createRadialGradient(x, y, 0, x, y, staticRadius + 3)
             fingertipGradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)')
             fingertipGradient.addColorStop(1, 'rgba(239, 68, 68, 0)')
 
             ctx.fillStyle = fingertipGradient
             ctx.beginPath()
-            ctx.arc(x, y, pulseRadius + 5, 0, 2 * Math.PI)
+            ctx.arc(x, y, staticRadius + 3, 0, 2 * Math.PI)
             ctx.fill()
 
-            // Pulsing ring
+            // Static ring
             ctx.beginPath()
-            ctx.arc(x, y, pulseRadius, 0, 2 * Math.PI)
-            ctx.strokeStyle = `rgba(239, 68, 68, ${0.8 + Math.sin(time * 2) * 0.2})`
+            ctx.arc(x, y, staticRadius, 0, 2 * Math.PI)
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'
             ctx.lineWidth = 2
             ctx.stroke()
 
