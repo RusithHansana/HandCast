@@ -373,6 +373,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 <div align="center">
 
-**Built with ❤️ by the React Three.js Community**
+**Built with ❤️ and React Three.js**
 
 </div>
