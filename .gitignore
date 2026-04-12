@@ -76,3 +76,10 @@ backend/htmlcov/
 backend/.mypy_cache/
 backend/.dmypy.json
 backend/dmypy.json
+
+# bmad
+_bmad
+_bmad-output
+.agent
+.github
+.gemini
