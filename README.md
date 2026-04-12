@@ -45,8 +45,7 @@ HandCast is a gesture-based 3D lighting control system that detects hand pointin
 
 ## Demo
 
-Watch the real-time demo of the interaction:
-[Video Demo Link](https://github.com/user-attachments/assets/eda98879-f875-4f07-8af6-47d04c4f5ab3)
+[Demo](https://github.com/user-attachments/assets/eda98879-f875-4f07-8af6-47d04c4f5ab3)
 
 ---
 
