@@ -1,4 +1,6 @@
-<h1 align="center">HandCast</h1>
+<p align="center">
+  <img src=".github/assets/hand-cast-cover.png" alt="SocketXO Cover" />
+</p>
 
 <p align="center">
   <strong>A cutting-edge gesture-based 3D lighting control system</strong>

@@ -81,5 +81,5 @@ backend/dmypy.json
 _bmad
 _bmad-output
 .agent
-.github
+.github/skills
 .gemini
