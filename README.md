@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/hand-cast-cover.png" alt="SocketXO Cover" />
+  <img src=".github/assets/hand-cast-cover.jpg" alt="SocketXO Cover" />
 </p>
 
 <p align="center">
